@@ -39,22 +39,21 @@ func Encrypt(plaintext string, rails int) string {
 }
 
 func Decrypt(ciphertext string, rails int) string {
-	// Calculate the length of each rail
 	railLengths := make([]int, rails)
 	direction := 1
 	current_rail := 0
 
 	for i := 0; i < len(ciphertext); i++ {
 		railLengths[current_rail]++
-		if current_rail == 0 {
+		switch current_rail {
+		case 0:
 			direction = 1
-		} else if current_rail == rails-1 {
+		case rails - 1:
 			direction = -1
 		}
 		current_rail += direction
 	}
 
-	// Split the ciphertext into rails
 	rail := make([][]rune, rails)
 	index := 0
 	for i := 0; i < rails; i++ {
@@ -62,7 +61,6 @@ func Decrypt(ciphertext string, rails int) string {
 		index += railLengths[i]
 	}
 
-	// Reconstruct the plaintext
 	plaintext := strings.Builder{}
 	current_rail = 0
 	direction = 1

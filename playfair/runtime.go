@@ -7,7 +7,7 @@ import (
 
 func createGrid(key string) [5][5]rune {
 	key = strings.ToUpper(key)
-	key = strings.ReplaceAll(key, "J", "I") // Treat I and J as the same letter
+	key = strings.ReplaceAll(key, "J", "I")
 	used := make(map[rune]bool)
 	grid := [5][5]rune{}
 	alphabet := "ABCDEFGHIKLMNOPQRSTUVWXYZ"
@@ -54,13 +54,11 @@ func findPosition(grid [5][5]rune, char rune) (int, int) {
 func Encrypt(plaintext, key string) string {
 	grid := createGrid(key)
 	plaintext = strings.ToUpper(plaintext)
-	plaintext = strings.ReplaceAll(plaintext, "J", "I") // Treat I and J as the same letter
+	plaintext = strings.ReplaceAll(plaintext, "J", "I")
 
-	// Prepare plaintext digraphs
 	var digraphs []string
 	for i := 0; i < len(plaintext); i++ {
 		if !unicode.IsLetter(rune(plaintext[i])) {
-			// Skip non-alphabetic characters
 			digraphs = append(digraphs, string(plaintext[i]))
 			continue
 		}
@@ -69,16 +67,13 @@ func Encrypt(plaintext, key string) string {
 			digraphs = append(digraphs, plaintext[i:i+2])
 			i++
 		} else {
-			// Add filler character 'X' if needed
 			digraphs = append(digraphs, string(plaintext[i])+"X")
 		}
 	}
 
-	// Encrypt each digraph
 	var ciphertext strings.Builder
 	for _, digraph := range digraphs {
 		if len(digraph) == 1 {
-			// Non-alphabetic characters are added as-is
 			ciphertext.WriteString(digraph)
 			continue
 		}
@@ -87,15 +82,12 @@ func Encrypt(plaintext, key string) string {
 		row2, col2 := findPosition(grid, rune(digraph[1]))
 
 		if row1 == row2 {
-			// Same row: shift right
 			ciphertext.WriteRune(grid[row1][(col1+1)%5])
 			ciphertext.WriteRune(grid[row2][(col2+1)%5])
 		} else if col1 == col2 {
-			// Same column: shift down
 			ciphertext.WriteRune(grid[(row1+1)%5][col1])
 			ciphertext.WriteRune(grid[(row2+1)%5][col2])
 		} else {
-			// Rectangle rule: swap columns
 			ciphertext.WriteRune(grid[row1][col2])
 			ciphertext.WriteRune(grid[row2][col1])
 		}
@@ -108,11 +100,9 @@ func Decrypt(ciphertext, key string) string {
 	grid := createGrid(key)
 	ciphertext = strings.ToUpper(ciphertext)
 
-	// Prepare ciphertext digraphs
 	var digraphs []string
 	for i := 0; i < len(ciphertext); i++ {
 		if !unicode.IsLetter(rune(ciphertext[i])) {
-			// Skip non-alphabetic characters
 			digraphs = append(digraphs, string(ciphertext[i]))
 			continue
 		}
@@ -125,11 +115,9 @@ func Decrypt(ciphertext, key string) string {
 		}
 	}
 
-	// Decrypt each digraph
 	var plaintext strings.Builder
 	for _, digraph := range digraphs {
 		if len(digraph) == 1 {
-			// Non-alphabetic characters are added as-is
 			plaintext.WriteString(digraph)
 			continue
 		}
@@ -138,15 +126,12 @@ func Decrypt(ciphertext, key string) string {
 		row2, col2 := findPosition(grid, rune(digraph[1]))
 
 		if row1 == row2 {
-			// Same row: shift left
 			plaintext.WriteRune(grid[row1][(col1+4)%5])
 			plaintext.WriteRune(grid[row2][(col2+4)%5])
 		} else if col1 == col2 {
-			// Same column: shift up
 			plaintext.WriteRune(grid[(row1+4)%5][col1])
 			plaintext.WriteRune(grid[(row2+4)%5][col2])
 		} else {
-			// Rectangle rule: swap columns
 			plaintext.WriteRune(grid[row1][col2])
 			plaintext.WriteRune(grid[row2][col1])
 		}

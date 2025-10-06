@@ -1,11 +1,12 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ALGORITHMS=("vigenere" "railfence" "playfair" "blowfish")
 
 build_algorithm() {
     local algorithm=$1
-    local folder="c:\\Users\\tsus1\\OneDrive\\Документи\\Yura_Files\\info_prot\\lab_2\\$algorithm"
-    local output_binary="$algorithm.exe"
+    local folder="$SCRIPT_DIR/$algorithm"
+    local output_binary="$SCRIPT_DIR/$algorithm.exe"
 
     echo "Building $algorithm..."
     go build -o "$output_binary" "$folder"
