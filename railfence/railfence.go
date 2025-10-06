@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -35,14 +36,17 @@ func main() {
 		os.Exit(1)
 	}
 
+	const placeholder = "{{SPACE}}"
+
 	var output string
 
 	if *encrypt {
-		fmt.Println("Encryption Key:", *key)
-		output = Encrypt(string(inputData), *key)
+		plaintext := strings.ReplaceAll(string(inputData), " ", placeholder)
+		output = Encrypt(plaintext, *key)
 	} else if *decrypt {
-		fmt.Println("Decryption Key:", *key)
-		output = Decrypt(string(inputData), *key)
+		ciphertext := string(inputData)
+		decrypted := Decrypt(ciphertext, *key)
+		output = strings.ReplaceAll(decrypted, placeholder, " ")
 	}
 
 	err = os.WriteFile(*outputFile, []byte(output), 0644)

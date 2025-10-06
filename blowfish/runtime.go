@@ -7,7 +7,6 @@ func runBlowfish(data, key []byte, encrypt bool) []byte {
 		panic("Key length must be between 4 and 72 bytes")
 	}
 
-	// Apply padding only for encryption
 	key = applyPadding(key, 4)
 	if encrypt {
 		data = applyPadding(data, 8)
@@ -28,7 +27,6 @@ func runBlowfish(data, key []byte, encrypt bool) []byte {
 		}
 	}
 
-	// Remove padding only for decryption
 	if !encrypt {
 		output = removePadding(output)
 	}

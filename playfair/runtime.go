@@ -5,7 +5,6 @@ import (
 	"unicode"
 )
 
-// Create a 5x5 Playfair cipher grid from the key
 func createGrid(key string) [5][5]rune {
 	key = strings.ToUpper(key)
 	key = strings.ReplaceAll(key, "J", "I") // Treat I and J as the same letter
@@ -13,7 +12,6 @@ func createGrid(key string) [5][5]rune {
 	grid := [5][5]rune{}
 	alphabet := "ABCDEFGHIKLMNOPQRSTUVWXYZ"
 
-	// Fill the grid with the key
 	row, col := 0, 0
 	for _, char := range key {
 		if !used[char] && unicode.IsLetter(char) {
@@ -27,7 +25,6 @@ func createGrid(key string) [5][5]rune {
 		}
 	}
 
-	// Fill the remaining spaces with the rest of the alphabet
 	for _, char := range alphabet {
 		if !used[char] {
 			grid[row][col] = char
@@ -43,7 +40,6 @@ func createGrid(key string) [5][5]rune {
 	return grid
 }
 
-// Find the position of a character in the grid
 func findPosition(grid [5][5]rune, char rune) (int, int) {
 	for row := 0; row < 5; row++ {
 		for col := 0; col < 5; col++ {
@@ -55,7 +51,6 @@ func findPosition(grid [5][5]rune, char rune) (int, int) {
 	return -1, -1
 }
 
-// Encrypt plaintext using the Playfair cipher
 func Encrypt(plaintext, key string) string {
 	grid := createGrid(key)
 	plaintext = strings.ToUpper(plaintext)
@@ -109,7 +104,6 @@ func Encrypt(plaintext, key string) string {
 	return ciphertext.String()
 }
 
-// Decrypt ciphertext using the Playfair cipher
 func Decrypt(ciphertext, key string) string {
 	grid := createGrid(key)
 	ciphertext = strings.ToUpper(ciphertext)
