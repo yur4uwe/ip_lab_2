@@ -51,5 +51,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Encryption and decryption results written to %s\n", *outputFile)
+	if *encrypt {
+		fmt.Printf("Encryption results written to %s\n", *outputFile)
+	} else if *decrypt {
+		fmt.Printf("Decryption results written to %s\n", *outputFile)
+	}
 }

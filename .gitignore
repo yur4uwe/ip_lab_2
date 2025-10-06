@@ -1,3 +1,4 @@
 decrypted/*
 encrypted/*
 !.git*
+*.exe
