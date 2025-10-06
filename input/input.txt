@@ -1,0 +1,5 @@
+This is a sample text for encryption testing.
+The quick brown fox jumps over the lazy dog.
+1234567890
+Special characters: !@#$%^&*()_+-=[]{}|;':",.<>/?~
+End of sample.

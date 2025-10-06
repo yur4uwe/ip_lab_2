@@ -1,4 +1,4 @@
-package blowfish
+package main
 
 var (
 	P = [18]uint32{

@@ -1,4 +1,4 @@
-package vigenere
+package main
 
 import (
 	"strings"

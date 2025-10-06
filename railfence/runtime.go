@@ -1,4 +1,4 @@
-package railfence
+package main
 
 import "strings"
 

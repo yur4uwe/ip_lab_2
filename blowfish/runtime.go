@@ -1,4 +1,4 @@
-package blowfish
+package main
 
 import "encoding/binary"
 

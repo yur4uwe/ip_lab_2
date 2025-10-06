@@ -1,4 +1,4 @@
-package playfair
+package main
 
 import (
 	"strings"
