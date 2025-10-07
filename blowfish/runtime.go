@@ -1,40 +1,53 @@
 package main
 
-import "encoding/binary"
+import (
+	"encoding/binary"
+	"io"
+	"os"
+)
 
-func runBlowfish(data, key []byte, encrypt bool) []byte {
-	if len(key) < 4 || len(key) > 72 {
-		panic("Key length must be between 4 and 72 bytes")
-	}
-
-	key = applyPadding(key, 4)
+func processBlock(block []byte, localP p, localS s, encrypt bool) []byte {
 	if encrypt {
-		data = applyPadding(data, 8)
+		block = applyPadding(block, blockSize)
+		return encryptBlock(block, localP, localS)
+	} else {
+		block = decryptBlock(block, localP, localS)
+		return removePadding(block)
 	}
+}
 
-	output := make([]byte, len(data))
-	blocks := len(data) / 8
+func Stream(infile *os.File, outfile *os.File, key []byte, encrypt bool) error {
 
-	localP, localS := initSAndP(key)
+	localP, localS := initializeBlowfishKey(key)
 
-	for i := 0; i < blocks; i++ {
-		start := i * 8
-		end := start + 8
-		if encrypt {
-			copy(output[start:end], encryptBlock(data[start:end], localP, localS))
-		} else {
-			copy(output[start:end], decryptBlock(data[start:end], localP, localS))
+	buffer := make([]byte, blockSize)
+
+	for {
+		n, err := infile.Read(buffer)
+		if err != nil && err != io.EOF {
+			break
+		}
+
+		if n == 0 {
+			break
+		}
+
+		block := processBlock(buffer[:n], localP, localS, encrypt)
+
+		_, write_err := outfile.Write(block)
+		if write_err != nil {
+			return write_err
+		}
+
+		if err == io.EOF {
+			break
 		}
 	}
 
-	if !encrypt {
-		output = removePadding(output)
-	}
-
-	return output
+	return nil
 }
 
-func ffunc(x uint32, Svals [4][256]uint32) uint32 {
+func ffunc(x uint32, Svals s) uint32 {
 	byte0 := byte(x >> 24)
 	byte1 := byte((x >> 16) & 0xFF)
 	byte2 := byte((x >> 8) & 0xFF)
@@ -48,9 +61,11 @@ func ffunc(x uint32, Svals [4][256]uint32) uint32 {
 	return res
 }
 
-func initSAndP(key []byte) ([18]uint32, [4][256]uint32) {
+func initializeBlowfishKey(key []byte) (p, s) {
 	localP := P
 	localS := S
+
+	key = applyPadding(key, 4)
 
 	keyLen := len(key)
 	j := 0
@@ -76,6 +91,10 @@ func initSAndP(key []byte) ([18]uint32, [4][256]uint32) {
 }
 
 func applyPadding(data []byte, blockSize int) []byte {
+	if len(data)%blockSize == 0 {
+		return data
+	}
+
 	padding := blockSize - (len(data) % blockSize)
 	if padding == 0 {
 		padding = blockSize
@@ -93,12 +112,12 @@ func applyPadding(data []byte, blockSize int) []byte {
 
 func removePadding(data []byte) []byte {
 	if len(data) == 0 {
-		panic("Data is empty, cannot remove padding")
+		return data
 	}
 
 	padding := int(data[len(data)-1])
 	if padding > len(data) || padding == 0 {
-		panic("Invalid padding")
+		return data
 	}
 
 	return data[:len(data)-padding]

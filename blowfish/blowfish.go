@@ -6,12 +6,20 @@ import (
 	"os"
 )
 
+func Encrypt(in, out *os.File, key []byte) error {
+	return ConcurrentStream(in, out, key, true)
+}
+
+func Decrypt(in, out *os.File, key []byte) error {
+	return ConcurrentStream(in, out, key, false)
+}
+
 func main() {
 	encrypt := flag.Bool("e", false, "Mode: encrypt or decrypt")
 	decrypt := flag.Bool("d", false, "Mode: decrypt or encrypt")
 	key := flag.String("k", "", "Key")
-	inputfile := flag.String("in", "", "Input file")
-	outputFile := flag.String("out", "result.txt", "Output file")
+	input_file_name := flag.String("in", "", "Input file")
+	output_file_name := flag.String("out", "result.txt", "Output file")
 	flag.Parse()
 
 	if *key == "" {
@@ -24,36 +32,36 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *inputfile == "" {
+	if *input_file_name == "" {
 		fmt.Println("Warning: The -in flag is ignored. Provide the input file as the first argument.")
 		os.Exit(1)
 	}
 
-	inputData, err := os.ReadFile(*inputfile)
+	inFile, err := os.Open(*input_file_name)
 	if err != nil {
 		fmt.Printf("Error reading input file: %v\n", err)
 		os.Exit(1)
 	}
+	defer inFile.Close()
 
-	var output []byte
+	outFile, err := os.OpenFile(*output_file_name, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+	if err != nil {
+		fmt.Printf("Error opening/creating output file: %v\n", err)
+		os.Exit(1)
+	}
+	defer outFile.Close()
 
 	if *encrypt {
 		fmt.Println("Encryption Key:", *key)
-		output = Encrypt(inputData, []byte(*key))
+		Encrypt(inFile, outFile, []byte(*key))
 	} else if *decrypt {
 		fmt.Println("Decryption Key:", *key)
-		output = Decrypt(inputData, []byte(*key))
-	}
-
-	err = os.WriteFile(*outputFile, output, 0644)
-	if err != nil {
-		fmt.Printf("Error writing to output file: %v\n", err)
-		os.Exit(1)
+		Decrypt(inFile, outFile, []byte(*key))
 	}
 
 	if *encrypt {
-		fmt.Printf("Encryption results written to %s\n", *outputFile)
+		fmt.Printf("Encryption results written to %s\n", *output_file_name)
 	} else if *decrypt {
-		fmt.Printf("Decryption results written to %s\n", *outputFile)
+		fmt.Printf("Decryption results written to %s\n", *output_file_name)
 	}
 }

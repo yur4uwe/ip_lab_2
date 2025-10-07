@@ -4,10 +4,6 @@ import (
 	"encoding/binary"
 )
 
-func Encrypt(data []byte, key []byte) []byte {
-	return runBlowfish(data, key, true)
-}
-
 func encryptBlock(block []byte, localP [18]uint32, localS [4][256]uint32) []byte {
 	L := uint32(0)
 	R := uint32(0)

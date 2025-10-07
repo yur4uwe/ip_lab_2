@@ -1,14 +1,22 @@
 package main
 
+type p [18]uint32
+type s [4][256]uint32
+
+const (
+	blockSize   = 8
+	workerCount = 4
+)
+
 var (
-	P = [18]uint32{
+	P = p{
 		0x243F6A88, 0x85A308D3, 0x13198A2E, 0x03707344,
 		0xA4093822, 0x299F31D0, 0x082EFA98, 0xEC4E6C89,
 		0x452821E6, 0x38D01377, 0xBE5466CF, 0x34E90C6C,
 		0xC0AC29B7, 0xC97C50DD, 0x3F84D5B5, 0xB5470917,
 		0x9216D5D9, 0x8979FB1B,
 	}
-	S = [4][256]uint32{
+	S = s{
 		{
 			0xD1310BA6, 0x98DFB5AC, 0x2FFD72DB, 0xD01ADFB7,
 			0xB8E1AFED, 0x6A267E96, 0xBA7C9045, 0xF12C7F99,

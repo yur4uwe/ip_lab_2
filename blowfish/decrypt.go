@@ -1,10 +1,8 @@
 package main
 
-import "encoding/binary"
-
-func Decrypt(data []byte, key []byte) []byte {
-	return runBlowfish(data, key, false)
-}
+import (
+	"encoding/binary"
+)
 
 func decryptBlock(block []byte, localP [18]uint32, localS [4][256]uint32) []byte {
 	L := uint32(0)
